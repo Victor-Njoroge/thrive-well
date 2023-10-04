@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Patient, NextOfKin
 
-# Configure your database connection here (e.g., SQLite)
+
 engine = create_engine('sqlite:///hospital_database.db')
 Base.metadata.bind = engine
 
