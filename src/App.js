@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
-import PatientForm from "./Components/PatientForm";
-import PatientList from "./Components/PatientList"
+import React from 'react';
+import Appointments from './Components/Appointment';
 
 function App() {
 
 
   return (
     <div className="App">
-      <PatientForm />
-      <PatientList />
+    <Appointments />
     </div>
   );
 }
