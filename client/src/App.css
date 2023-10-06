@@ -1,0 +1,152 @@
+*{
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  box-sizing: border-box;
+  outline: none;
+  border: none;
+  text-decoration: none;
+  text-transform: capitalize;
+  transition: all .2s linear;
+}
+html{
+  font-size: 62.5%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  scroll-padding-top: 7rem;
+}
+body{
+  background: #eee;
+}
+
+.header{
+  position: fixed;
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  justify-content: space-around;
+  width: 100%;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1));
+  padding: 2rem 9%;
+ border-bottom: 1px solid grey;
+  z-index: 1000;
+
+}
+
+.header .navigation a{
+  font-size: 1.7rem;
+  margin: 0 1rem;
+  color: black;
+}
+.header .navigation a:hover{
+  color: #0c3227;
+  text-decoration: underline;
+}
+
+.home{
+  display: block;
+  align-items: center;
+  justify-content: left;
+  background: url("https://cdn.pixabay.com/photo/2016/11/06/10/35/hospital-1802679_1280.jpg");
+  background-position: center;
+  background-size: cover;
+  padding-top: 17rem;
+  padding-bottom: 10rem;
+  height: 80vh;
+}
+.home h3{
+  color: white;
+  font-size: 3rem;
+  margin-top: 8rem;
+}
+.home h3{
+  color: black;
+  font-size: 5rem;
+  width: 60rem;
+  margin-top: 1.5rem;
+  margin-left: 5rem;
+}
+.home p{
+  color: black;
+  font-size: 1.5rem;
+  margin-top: 1.5rem;
+  width: 50rem;
+  margin-bottom: 1.5rem;
+  margin-left: 5rem;
+}
+
+.btn{
+  height: 4rem;
+  font-size: 1.3rem;
+  background: #1698cb;
+  color: white;
+  width: 15rem;
+  cursor: pointer;
+  margin: 0 5rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  margin-top: 7rem;
+  font-size: 16px;
+  border: 1px solid #ddd;
+}
+
+/* Style for table headers */
+th {
+  background-color: #f2f2f2;
+  text-align: left;
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+td {
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+
+tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+thead th {
+  background-color: #1698cb;
+  color: #fff;
+}
+
+label {
+  font-weight: bold;
+}
+
+input[type="text"] {
+  width: 50rem;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
+button[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+p {
+  color: #ff0000;
+  margin-top: 10px;
+}
+
+
+p.success {
+  color: #007bff;
+  margin-top: 10px;
+}
