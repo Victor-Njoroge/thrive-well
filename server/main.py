@@ -8,6 +8,7 @@ from appointment import Appointment
 from progress import Progress
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///mydatabase.db'
@@ -16,23 +17,46 @@ db.init_app(app)
 
 
 
-@app.route('/patients/<string:regNo>', methods=["GET"])
-def patients_under_doctor(regNo):
+@app.route('/patient', methods=["GET"])
+def patients_under_doctor():
     if request.method == "GET":
-        doctor=Doctor.query.filter_by(regNo=regNo).first()
-        
-        if doctor :
-            patients=Appointment.query.filter_by(doctor_id=doctor.id).all()
-            patient_data=[{
-                'fname': patient.patient.fname,
-                'lname': patient.patient.lname,
-                'regNo': patient.patient.regNo,
-                'phone_number': patient.patient.phone_number,
-                'gender':patient.patient.gender
-            } for patient in patients]
+        patients=Patient.query.all()
+        patient_list = []
 
-        return jsonify(patient_data)
+        for patient in patients:
+            patient_info = {
+                'id': patient.id,
+                'fname': patient.fname,
+                'lname': patient.lname,
+                'email': patient.email,
+                'phone_number': patient.phone_number,
+                'regNo': patient.regNo,
+                'gender': patient.gender
+            }
+            patient_list.append(patient_info)
+
+        return jsonify({'patients': patient_list})
             
+@app.route('/doctor', methods=["GET"])
+def all_doctors():
+    if request.method == "GET":
+        doctors = Doctor.query.all()
+        doctor_list = []
+
+       
+        for doctor in doctors:
+            doctor_info = {
+                'id': doctor.id,
+                'fname': doctor.fname,
+                'lname': doctor.lname,
+                'regNo': doctor.regNo,
+                'email': doctor.email,
+                'phoneNo': doctor.phoneNo,
+                'gender': doctor.gender,
+                'hospital_id': doctor.hospital_id
+            }
+            doctor_list.append(doctor_info)
+        return jsonify({'doctors': doctor_list})
 
 @app.route('/progress/<string:regNo>', methods=["GET"])
 def patients_progress(regNo):
@@ -56,6 +80,55 @@ def patients_progress(regNo):
             return jsonify(progress_data)
         else:
             return "Patient not found", 404
+
+@app.route('/appointments', methods=["GET"])
+def all_appointments():
+    if request.method == "GET":
+        appointments = Appointment.query.all()
+        appointment_list = []
+
+        for appointment in appointments:
+            doctor = Doctor.query.get(appointment.doctor_id)
+            patient = Patient.query.get(appointment.patient_id)
+            appointment_dict = {
+                'id': appointment.id,
+                'doctor_regNo': doctor.regNo if doctor else None,  
+                'patient_regNo': patient.regNo if patient else None,  
+                'appointment_date': appointment.appointment_date.strftime('%Y-%m-%d'),
+                'appointment_time': appointment.appointment_time.strftime('%H:%M:%S')
+            }
+
+            appointment_list.append(appointment_dict)
+        return jsonify(appointment_list)
+
+@app.route('/update_appointment/<int:id>', methods=["PATCH"])
+def update_appointment_date(id):
+    if request.method == "PATCH":
+        try:
+            data = request.json
+            appointment = Appointment.query.filter_by(id=id).first()
+
+            if appointment:
+                new_date_str = data.get('appointment_date')
+                new_date = datetime.strptime(new_date_str, '%Y-%m-%d').date()  # Convert the string to a date object
+                appointment.appointment_date = new_date
+
+                db.session.commit()
+                return jsonify({"message": "Appointment date updated successfully"})
+            else:
+                return jsonify({"error": "Appointment not found"}), 404
+        except Exception as e:
+            return jsonify({"error": str(e)}), 
+       
+
+
+
+
+
+
+
+
+
 
 
 
@@ -134,6 +207,89 @@ def post_patient():
             return jsonify({'message': 'Patient created successfully'}), 201
         else:
             return jsonify({'error': 'Missing fields in the request data'}), 400
+
+
+@app.route('/create_doctor', methods=["POST"])
+def post_doctor():
+    if request.method == "POST":
+        data = request.json
+
+        print("Received Data:", data)
+
+        if 'fname' in data and 'lname' in data and 'password' in data and 'email' in data and 'phone_number' in data and 'regNo' in data and 'gender' in data:
+            new_doctor = Doctor(
+                fname=str(data['fname']),
+                lname=str(data['lname']),
+                password=str(data['password']),
+                email=str(data['email']),
+                phoneNo=str(data['phone_number']),
+                regNo=str(data['regNo']),
+                gender=str(data['gender'])
+            )
+
+            db.session.add(new_doctor)
+            db.session.commit()
+
+            return jsonify({'message': 'Doctor created successfully'}), 201
+        else:
+            return jsonify({'error': 'Missing fields in the request data'}), 400
+
+
+@app.route('/get_treatments', methods=["GET"])
+def get_treatments():
+    try:
+        treatments = Treatment.query.all()
+        treatments_list = []
+
+        for treatment in treatments:
+            patient = Patient.query.get(treatment.patient_id)
+            doctor = Doctor.query.get(treatment.doctor_id)
+
+            treatment_dict = {
+                'id': treatment.id,
+                'patient_regNo': patient.regNo if patient else None,
+                'doctor_regNo': doctor.regNo if doctor else None,
+                'disease_id': treatment.disease_id,
+                'hospital_id': treatment.hospital_id,
+            }
+
+            treatments_list.append(treatment_dict)
+
+        return jsonify({'treatments': treatments_list})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/update_treatment_progress', methods=['PATCH'])
+def update_treatment_progress():
+    data = request.get_json()
+
+   
+    patient_regNo = data.get('patient_regNo')
+    doctor_regNo = data.get('doctor_regNo')
+    new_progress = data.get('progress') 
+
+    patient = Patient.query.filter_by(regNo=patient_regNo).first()
+    doctor = Doctor.query.filter_by(regNo=doctor_regNo).first()
+
+    if not patient or not doctor:
+        return jsonify({'message': 'Patient or doctor not found'}), 404
+
+    treatment = Treatment.query.filter_by(
+        patient_id=patient.id,
+        doctor_id=doctor.id
+    ).first()
+
+    if not treatment:
+        return jsonify({'message': 'Treatment not found'}), 404
+
+    
+    treatment.progress = new_progress
+
+    db.session.commit()
+
+    return jsonify({'message': 'Treatment progress updated successfully'})
+
 
 @app.route('/login_doctor', methods=["POST"])
 def doctor_login():
