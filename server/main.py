@@ -11,7 +11,7 @@ from flask_cors import CORS
 from datetime import datetime
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///mydatabase.db'
+app.config['SQLALCHEMY_DATABASE_URI']='postgres://thrivewell_user:IkonmnWbPZYcMACv2hFXufZWLnPrYgda@dpg-ckdvee4iibqc73b2u63g-a.oregon-postgres.render.com/thrivewell'
 db.init_app(app)
 
 
