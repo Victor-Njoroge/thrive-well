@@ -10,9 +10,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
 app = Flask(__name__)
-gunicorn app:app
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI']='postgres://thrivewell_user:IkonmnWbPZYcMACv2hFXufZWLnPrYgda@dpg-ckdvee4iibqc73b2u63g-a.oregon-postgres.render.com/thrivewell'
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///mydatabase.db'
 db.init_app(app)
 
 
